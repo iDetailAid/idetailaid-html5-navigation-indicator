@@ -1,0 +1,66 @@
+<!--
+  This is an example of how to build an HTML 5 navigation indicator for an iDetailAid presentation.
+
+  See http://docs.idetailaid.co.uk/dev-docs/intro/ for more information.
+-->
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Navigation Indicator</title>
+
+  <style>
+    .flex-grid {
+      display: flex;
+    }
+    
+    .dot.active {
+      background-color:#666;
+    }
+
+    .dot {
+      margin:3px;
+      height: 10px;
+      width: 10px;
+      background-color: #bbb;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+  </style>
+
+  <script>
+    // Wait for the slide to load
+    // https://docs.idetailaid.co.uk/dev-docs/ida-events/#slide-lifecycle-events
+    document.addEventListener('slideLoaded', event => {
+      
+      // `event.detail` contains information about the presentation and the slide this HTML is embedded in
+      // https://docs.idetailaid.co.uk/dev-docs/ida-events/#the-idetailaid-viewer-event-object
+      //
+      // event.detail.manifest contains all the information to render an iDA presentation.
+      // event.detail.manifest.matrix is a 2 dimensional array of the presentation structure, each node holds a slide object
+      // https://docs.idetailaid.co.uk/dev-docs/ida-events/#eventdetailslide
+
+      let html='';
+      // loop the columns in the matrix
+      event.detail.manifest.matrix.forEach( (col, x) => {
+        html += '<div class="col">';
+        // loop the rows in the matrix
+        col.forEach( (slide, y)  => {
+          // create a .dot to represent this slide, and set it to active if this is the position we are currently in
+          const active = (event.detail.x == x && event.detail.y == y) ? 'active' : '';
+          html += `<div class="row dot ${active}" title="${slide.title}" onclick="ida.Viewer.api.goTo(${x},${y})" ></div>`;
+        });
+        html += '</div>';
+      });
+
+      document.querySelector('#indicator').innerHTML = html;
+    });
+  </script>
+</head>
+
+<body>
+  <dic id="indicator" class="flex-grid"></div>
+</body>
+
+</html>
